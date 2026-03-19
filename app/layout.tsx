@@ -7,14 +7,39 @@ const inter = Inter({
   subsets: ["latin"],
 });
 
-const basePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
+const SITE_URL = "https://vaultedworth.com";
+const TITLE = "Vaulted — private net worth tracker";
+const DESCRIPTION =
+  "Track your net worth without creating an account, linking your bank, or giving your data away. 100% local, no sign-up, works offline.";
 
 export const metadata: Metadata = {
-  title: "Vaulted — private net worth tracker",
-  description:
-    "Track your net worth without creating an account, linking your bank, or giving your data away.",
+  title: TITLE,
+  description: DESCRIPTION,
   applicationName: "Vaulted",
-  manifest: `${basePath}/manifest.webmanifest`,
+  manifest: "/manifest.webmanifest",
+  metadataBase: new URL(SITE_URL),
+  openGraph: {
+    title: TITLE,
+    description: DESCRIPTION,
+    url: SITE_URL,
+    siteName: "Vaulted",
+    images: [
+      {
+        url: "/og-image.jpg",
+        width: 1200,
+        height: 900,
+        alt: "Vaulted — privacy-first net worth tracker dashboard",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: TITLE,
+    description: DESCRIPTION,
+    images: ["/og-image.jpg"],
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
@@ -29,6 +54,10 @@ export const metadata: Metadata = {
     "offline finance app",
     "mint alternative",
     "local-first finance",
+    "no sign up",
+    "no bank login",
+    "personal finance",
+    "net worth calculator",
   ],
 };
 
