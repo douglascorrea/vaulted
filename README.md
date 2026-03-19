@@ -1,36 +1,63 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Vaulted
 
-## Getting Started
+**Vaulted** is a privacy-first net worth tracker built for people who want control over their money data.
 
-First, run the development server:
+No accounts. No bank logins. No syncing to the cloud. Your data stays in-browser.
+
+## Why this exists
+
+Every week in `r/personalfinance` and `r/Fire`, people ask for alternatives to mainstream finance apps because they:
+
+- don’t want to link bank accounts
+- don’t trust cloud privacy defaults
+- want simple, mobile-first net worth tracking
+
+Vaulted ships quickly on this gap.
+
+## Features (MVP)
+
+- Add and edit assets and liabilities manually
+- Track in multiple currencies
+- Local-first storage with no backend
+- Monthly snapshots and net-worth history chart
+- Offline-capable PWA
+- CSV/JSON import + JSON export
+- Privacy-first onboarding banner and clear local data policy
+
+## Tech Stack
+
+- Next.js 16 (App Router)
+- TypeScript
+- Tailwind CSS
+- Recharts
+- Lucide icons
+
+## Run locally
 
 ```bash
+cd /Volumes/corsair_1tb_mac/Sites/vaulted
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Then open http://localhost:3000
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Build
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run build
+```
 
-## Learn More
+## Repo
 
-To learn more about Next.js, take a look at the following resources:
+GitHub: https://github.com/douglascorrea/vaulted
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Product philosophy
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Vaulted is intentionally scoped narrow:
+- no AI (at least in v1)
+- no bank integrations
+- no account and no login
+- zero server-side user data
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+If this resonates, we can add an optional paid sync layer later.
