@@ -15,6 +15,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/blog/vaulted-vs-mint",
     "/blog/vaulted-vs-ynab",
     "/blog/vaulted-vs-copilot-money",
+    "/tools/net-worth-percentile",
   ];
 
   return routes.map((route) => ({
