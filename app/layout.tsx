@@ -19,6 +19,9 @@ export const metadata: Metadata = {
   applicationName: "Vaulted",
   manifest: "/manifest.webmanifest",
   metadataBase: new URL(SITE_URL),
+  alternates: {
+    canonical: SITE_URL,
+  },
   openGraph: {
     title: TITLE,
     description: DESCRIPTION,

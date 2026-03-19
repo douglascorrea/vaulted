@@ -1074,6 +1074,25 @@ export function VaultedApp() {
             </section>
           ) : null}
         </div>
+
+        <footer className={`mt-10 pb-4 text-center text-sm ${dark ? "text-slate-400" : "text-slate-500"}`}>
+          <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
+            <a href="/blog" className="transition hover:text-emerald-400">
+              blog
+            </a>
+            <span aria-hidden="true">•</span>
+            <a
+              href="https://github.com/douglascorrea/vaulted"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="transition hover:text-emerald-400"
+            >
+              source code
+            </a>
+            <span aria-hidden="true">•</span>
+            <span>100% local-first</span>
+          </div>
+        </footer>
       </main>
 
       <button
