@@ -29,6 +29,34 @@ const posts = [
     summary:
       "A PWA that works without internet. Install it, go offline, and your net worth data is still right there.",
   },
+  {
+    slug: "vaulted-vs-monarch-money",
+    title: "Vaulted vs Monarch Money — Privacy Comparison 2026",
+    date: "March 19, 2026",
+    summary:
+      "Monarch Money costs $14.99/mo and requires your bank login. Vaulted is free, open source, and never touches your bank credentials.",
+  },
+  {
+    slug: "vaulted-vs-mint",
+    title: "Vaulted vs Mint — Why Mint Users Need a Private Alternative",
+    date: "March 19, 2026",
+    summary:
+      "Mint shut down in 2024. Most replacements want your bank login and a monthly fee. Here's the free, private alternative for net worth tracking.",
+  },
+  {
+    slug: "vaulted-vs-ynab",
+    title: "Vaulted vs YNAB — Do You Need a $14/mo Budget App to Track Net Worth?",
+    date: "March 19, 2026",
+    summary:
+      "YNAB is built for zero-based budgeting, not net worth tracking. Vaulted is free, private, and purpose-built for watching your wealth grow.",
+  },
+  {
+    slug: "vaulted-vs-copilot-money",
+    title: "Vaulted vs Copilot Money — Free vs $12/mo for Net Worth Tracking",
+    date: "March 19, 2026",
+    summary:
+      "Copilot Money is iOS/Mac only and costs $12.99/month. Vaulted is free, works on any platform, and keeps your data local.",
+  },
 ];
 
 export default function BlogIndex() {

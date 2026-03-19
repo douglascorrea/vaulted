@@ -26,6 +26,7 @@ import {
   Moon,
   Plus,
   Settings,
+  Share2,
   Shield,
   Sparkles,
   Sun,

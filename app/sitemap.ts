@@ -11,6 +11,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/blog/private-net-worth-tracker",
     "/blog/net-worth-tracker-without-plaid",
     "/blog/offline-net-worth-tracker",
+    "/blog/vaulted-vs-monarch-money",
+    "/blog/vaulted-vs-mint",
+    "/blog/vaulted-vs-ynab",
+    "/blog/vaulted-vs-copilot-money",
   ];
 
   return routes.map((route) => ({
