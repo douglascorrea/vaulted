@@ -9,6 +9,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "",
     "/blog",
     "/blog/private-net-worth-tracker",
+    "/blog/net-worth-tracker-without-plaid",
+    "/blog/offline-net-worth-tracker",
   ];
 
   return routes.map((route) => ({

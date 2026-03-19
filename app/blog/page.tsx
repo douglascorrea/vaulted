@@ -15,6 +15,20 @@ const posts = [
     summary:
       "Comparing net worth trackers on privacy: no account, no bank login, no server, open source. Where each tool stands.",
   },
+  {
+    slug: "net-worth-tracker-without-plaid",
+    title: "Net Worth Tracker Without Plaid — Why Manual Entry Wins on Privacy",
+    date: "March 19, 2026",
+    summary:
+      "Why you don't need Plaid to track your net worth. Manual entry takes 2 minutes/month and keeps your bank credentials private.",
+  },
+  {
+    slug: "offline-net-worth-tracker",
+    title: "Offline Net Worth Tracker — Track Your Wealth Without Internet",
+    date: "March 19, 2026",
+    summary:
+      "A PWA that works without internet. Install it, go offline, and your net worth data is still right there.",
+  },
 ];
 
 export default function BlogIndex() {
