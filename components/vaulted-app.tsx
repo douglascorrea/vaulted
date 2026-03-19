@@ -63,6 +63,7 @@ import {
 import { loadData, saveData } from "@/lib/storage";
 import { ServiceWorkerRegister } from "@/components/service-worker-register";
 import { posthog } from "@/lib/posthog";
+import { ShareJourneyModal } from "@/components/share-journey-modal";
 
 const BACKUP_REMINDER_THRESHOLD = 5; // remind after N changes without backup
 const BACKUP_REMINDER_DAYS = 7; // remind after N days without backup
@@ -337,6 +338,7 @@ export function VaultedApp() {
   const [activeTab, setActiveTab] = useState<TabKey>("dashboard");
   const [showModal, setShowModal] = useState(false);
   const [showBackupReminder, setShowBackupReminder] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false);
   const [form, setForm] = useState<EntryFormState>(EMPTY_FORM);
   const [status, setStatus] = useState<string>("");
 
@@ -697,6 +699,21 @@ export function VaultedApp() {
                   </button>
                   <button className={buttonClasses(dark)} onClick={saveSnapshotNow}>
                     <History className="h-4 w-4" /> Save monthly snapshot
+                  </button>
+                  <button
+                    className={
+                      data.snapshots.length >= 2
+                        ? buttonClasses(dark)
+                        : `${buttonClasses(dark)} opacity-50 cursor-not-allowed`
+                    }
+                    onClick={() => setShowShareModal(true)}
+                    title={
+                      data.snapshots.length < 2
+                        ? "Take at least 2 monthly snapshots to share your journey"
+                        : "Share your net worth journey"
+                    }
+                  >
+                    <Share2 className="h-4 w-4" /> Share your journey
                   </button>
                 </div>
               </div>
@@ -1179,6 +1196,14 @@ export function VaultedApp() {
           onSave={saveEntry}
           onDelete={deleteEntry}
           isEditing={Boolean(form.id)}
+        />
+      ) : null}
+
+      {showShareModal ? (
+        <ShareJourneyModal
+          dark={dark}
+          snapshots={data.snapshots}
+          onClose={() => setShowShareModal(false)}
         />
       ) : null}
     </div>
