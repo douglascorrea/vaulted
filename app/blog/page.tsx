@@ -9,6 +9,20 @@ export const metadata: Metadata = {
 
 const posts = [
   {
+    slug: "local-first-personal-finance",
+    title: "Why Local-First Personal Finance Software Makes Sense",
+    date: "March 19, 2026",
+    summary:
+      "For personal finance, local-first should be the default. Your net worth data belongs on your device, not someone else's server.",
+  },
+  {
+    slug: "manual-net-worth-tracking",
+    title: "Manual Net Worth Tracking Beats Bank Sync for Most People",
+    date: "March 19, 2026",
+    summary:
+      "Automatic sync sounds convenient, but monthly manual tracking is often simpler, cleaner, and much more private.",
+  },
+  {
     slug: "private-net-worth-tracker",
     title: "Best Private Net Worth Tracker in 2026 (No Bank Login Required)",
     date: "March 19, 2026",
