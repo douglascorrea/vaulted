@@ -54,13 +54,16 @@ import {
   parseCsv,
   safeParseData,
   serializeData,
-  STORAGE_KEY,
   SUPPORTED_CURRENCIES,
   type TabKey,
   type VaultedData,
   createId,
 } from "@/lib/vaulted";
+import { loadData, saveData } from "@/lib/storage";
 import { ServiceWorkerRegister } from "@/components/service-worker-register";
+
+const BACKUP_REMINDER_THRESHOLD = 5; // remind after N changes without backup
+const BACKUP_REMINDER_DAYS = 7; // remind after N days without backup
 
 const NAV_ITEMS: { key: TabKey; label: string; icon: typeof ChartNoAxesCombined }[] = [
   { key: "dashboard", label: "Dashboard", icon: ChartNoAxesCombined },
@@ -309,15 +312,29 @@ function EntryModal({
   );
 }
 
+function shouldShowBackupReminder(settings: VaultedData["settings"]): boolean {
+  const changes = settings.changesSinceBackup ?? 0;
+  if (changes >= BACKUP_REMINDER_THRESHOLD) return true;
+
+  if (settings.lastBackupAt) {
+    const last = new Date(settings.lastBackupAt).getTime();
+    const now = Date.now();
+    const daysSince = (now - last) / (1000 * 60 * 60 * 24);
+    if (daysSince >= BACKUP_REMINDER_DAYS && changes > 0) return true;
+  } else if (changes > 0) {
+    // Never backed up but has changes
+    return true;
+  }
+
+  return false;
+}
+
 export function VaultedApp() {
-  const [data, setData] = useState<VaultedData>(() => {
-    if (typeof window === "undefined") {
-      return DEFAULT_DATA;
-    }
-    return safeParseData(window.localStorage.getItem(STORAGE_KEY));
-  });
+  const [data, setData] = useState<VaultedData>(DEFAULT_DATA);
+  const [loaded, setLoaded] = useState(false);
   const [activeTab, setActiveTab] = useState<TabKey>("dashboard");
   const [showModal, setShowModal] = useState(false);
+  const [showBackupReminder, setShowBackupReminder] = useState(false);
   const [form, setForm] = useState<EntryFormState>(EMPTY_FORM);
   const [status, setStatus] = useState<string>("");
 
@@ -326,9 +343,19 @@ export function VaultedApp() {
 
   const dark = data.settings.theme === "dark";
 
+  // Load from IndexedDB (primary) with localStorage fallback
   useEffect(() => {
-    window.localStorage.setItem(STORAGE_KEY, serializeData(data));
-  }, [data]);
+    loadData().then((stored) => {
+      setData(stored);
+      setLoaded(true);
+    });
+  }, []);
+
+  // Persist to both IndexedDB + localStorage
+  useEffect(() => {
+    if (!loaded) return;
+    saveData(data);
+  }, [data, loaded]);
 
   useEffect(() => {
     if (data.entries.length === 0) return;
@@ -345,6 +372,9 @@ export function VaultedApp() {
     const timeout = window.setTimeout(() => setStatus(""), 3500);
     return () => window.clearTimeout(timeout);
   }, [status]);
+
+  // Check backup reminder when data changes
+  const backupNeeded = loaded && shouldShowBackupReminder(data.settings);
 
   const assets = useMemo(
     () => data.entries.filter((entry) => entry.type === "asset"),
@@ -460,6 +490,10 @@ export function VaultedApp() {
       entries: current.entries.some((item) => item.id === entry.id)
         ? current.entries.map((item) => (item.id === entry.id ? entry : item))
         : [entry, ...current.entries],
+      settings: {
+        ...current.settings,
+        changesSinceBackup: (current.settings.changesSinceBackup ?? 0) + 1,
+      },
     }));
     setStatus(form.id ? "Entry updated." : "Entry saved.");
     setShowModal(false);
@@ -471,6 +505,10 @@ export function VaultedApp() {
     setData((current) => ({
       ...current,
       entries: current.entries.filter((item) => item.id !== form.id),
+      settings: {
+        ...current.settings,
+        changesSinceBackup: (current.settings.changesSinceBackup ?? 0) + 1,
+      },
     }));
     setStatus("Entry deleted.");
     setShowModal(false);
@@ -488,13 +526,30 @@ export function VaultedApp() {
 
   const exportJson = () => {
     downloadFile("vaulted-export.json", serializeData(data), "application/json");
+    setData((current) => ({
+      ...current,
+      settings: {
+        ...current.settings,
+        lastBackupAt: new Date().toISOString(),
+        changesSinceBackup: 0,
+      },
+    }));
+    setShowBackupReminder(false);
     setStatus("Exported JSON backup.");
   };
 
   const importJson = async (file: File) => {
     const text = await readFile(file);
     const parsed = safeParseData(text);
-    setData(parsed);
+    setData({
+      ...parsed,
+      settings: {
+        ...parsed.settings,
+        lastBackupAt: new Date().toISOString(),
+        changesSinceBackup: 0,
+      },
+    });
+    setShowBackupReminder(false);
     setStatus("Imported JSON backup.");
   };
 
@@ -644,6 +699,45 @@ export function VaultedApp() {
             }`}
           >
             {status}
+          </div>
+        ) : null}
+
+        {(showBackupReminder || backupNeeded) && !showModal && data.settings.onboarded ? (
+          <div
+            className={`mt-4 rounded-2xl px-5 py-4 ${
+              dark
+                ? "border border-amber-400/20 bg-amber-500/10"
+                : "border border-amber-200 bg-amber-50"
+            }`}
+          >
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex items-start gap-3">
+                <Download className={`mt-0.5 h-5 w-5 flex-shrink-0 ${dark ? "text-amber-300" : "text-amber-600"}`} />
+                <div>
+                  <p className={`text-sm font-semibold ${dark ? "text-amber-200" : "text-amber-800"}`}>
+                    Back up your vault
+                  </p>
+                  <p className={`mt-1 text-sm ${dark ? "text-amber-200/70" : "text-amber-700"}`}>
+                    {data.settings.changesSinceBackup ?? 0} unsaved change{(data.settings.changesSinceBackup ?? 0) !== 1 ? "s" : ""} since your last backup.
+                    Your data lives only on this device — export a backup to keep it safe.
+                  </p>
+                </div>
+              </div>
+              <div className="flex gap-2 sm:flex-shrink-0">
+                <button
+                  className={buttonClasses(dark, "primary")}
+                  onClick={exportJson}
+                >
+                  <Download className="h-4 w-4" /> Export backup
+                </button>
+                <button
+                  className={buttonClasses(dark)}
+                  onClick={() => setShowBackupReminder(false)}
+                >
+                  Later
+                </button>
+              </div>
+            </div>
           </div>
         ) : null}
 
@@ -906,7 +1000,7 @@ export function VaultedApp() {
 
                 <div className="mt-5 grid gap-3 sm:grid-cols-2">
                   <button className={buttonClasses(dark, "primary")} onClick={exportJson}>
-                    <Download className="h-4 w-4" /> Export JSON
+                    <Download className="h-4 w-4" /> Export JSON backup
                   </button>
                   <button className={buttonClasses(dark)} onClick={() => jsonInputRef.current?.click()}>
                     <Import className="h-4 w-4" /> Import JSON
@@ -918,6 +1012,19 @@ export function VaultedApp() {
                     <Trash2 className="h-4 w-4" /> Clear all data
                   </button>
                 </div>
+
+                {data.settings.lastBackupAt ? (
+                  <div className={`mt-4 rounded-2xl px-4 py-3 text-sm ${dark ? "bg-white/5 text-slate-400" : "bg-slate-50 text-slate-500"}`}>
+                    Last backup: {new Date(data.settings.lastBackupAt).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" })}
+                    {(data.settings.changesSinceBackup ?? 0) > 0
+                      ? ` · ${data.settings.changesSinceBackup} change${(data.settings.changesSinceBackup ?? 0) !== 1 ? "s" : ""} since`
+                      : " · All changes backed up ✓"}
+                  </div>
+                ) : (
+                  <div className={`mt-4 rounded-2xl px-4 py-3 text-sm ${dark ? "bg-amber-500/10 text-amber-200" : "bg-amber-50 text-amber-700"}`}>
+                    ⚠️ You haven&apos;t exported a backup yet. Your data only exists on this device.
+                  </div>
+                )}
 
                 <input
                   ref={jsonInputRef}

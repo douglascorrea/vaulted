@@ -61,6 +61,8 @@ export interface Settings {
   theme: ThemeMode;
   onboarded: boolean;
   lastAutoSnapshotMonth?: string;
+  lastBackupAt?: string;
+  changesSinceBackup?: number;
 }
 
 export interface VaultedData {
