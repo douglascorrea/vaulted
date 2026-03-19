@@ -61,6 +61,7 @@ import {
 } from "@/lib/vaulted";
 import { loadData, saveData } from "@/lib/storage";
 import { ServiceWorkerRegister } from "@/components/service-worker-register";
+import { posthog } from "@/lib/posthog";
 
 const BACKUP_REMINDER_THRESHOLD = 5; // remind after N changes without backup
 const BACKUP_REMINDER_DAYS = 7; // remind after N days without backup
@@ -495,6 +496,11 @@ export function VaultedApp() {
         changesSinceBackup: (current.settings.changesSinceBackup ?? 0) + 1,
       },
     }));
+    posthog?.capture(form.id ? "entry_updated" : "entry_created", {
+      type: entry.type,
+      category: entry.category,
+      currency: entry.currency,
+    });
     setStatus(form.id ? "Entry updated." : "Entry saved.");
     setShowModal(false);
   };
@@ -510,6 +516,7 @@ export function VaultedApp() {
         changesSinceBackup: (current.settings.changesSinceBackup ?? 0) + 1,
       },
     }));
+    posthog?.capture("entry_deleted");
     setStatus("Entry deleted.");
     setShowModal(false);
   };
@@ -521,6 +528,7 @@ export function VaultedApp() {
     }
 
     setData((current) => createSnapshot(current));
+    posthog?.capture("snapshot_saved");
     setStatus("Snapshot saved.");
   };
 
@@ -535,6 +543,7 @@ export function VaultedApp() {
       },
     }));
     setShowBackupReminder(false);
+    posthog?.capture("export_json");
     setStatus("Exported JSON backup.");
   };
 
@@ -550,6 +559,7 @@ export function VaultedApp() {
       },
     });
     setShowBackupReminder(false);
+    posthog?.capture("import_json", { entries: parsed.entries.length });
     setStatus("Imported JSON backup.");
   };
 
@@ -566,6 +576,7 @@ export function VaultedApp() {
       ...current,
       entries: [...importedEntries, ...current.entries],
     }));
+    posthog?.capture("import_csv", { rows: importedEntries.length });
     setStatus(`Imported ${importedEntries.length} row(s) from CSV.`);
   };
 
@@ -1121,15 +1132,16 @@ export function VaultedApp() {
 
               <button
                 className={`${buttonClasses(true, "primary")} mt-8 w-full sm:w-auto`}
-                onClick={() =>
+                onClick={() => {
                   setData((current) => ({
                     ...current,
                     settings: {
                       ...current.settings,
                       onboarded: true,
                     },
-                  }))
-                }
+                  }));
+                  posthog?.capture("onboarding_completed");
+                }}
               >
                 Start my private vault
               </button>
