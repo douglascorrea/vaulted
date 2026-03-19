@@ -7,12 +7,14 @@ const inter = Inter({
   subsets: ["latin"],
 });
 
+const basePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
+
 export const metadata: Metadata = {
   title: "Vaulted — private net worth tracker",
   description:
     "Track your net worth without creating an account, linking your bank, or giving your data away.",
   applicationName: "Vaulted",
-  manifest: "/manifest.webmanifest",
+  manifest: `${basePath}/manifest.webmanifest`,
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",

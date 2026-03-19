@@ -8,7 +8,8 @@ export function ServiceWorkerRegister() {
 
     const register = async () => {
       try {
-        await navigator.serviceWorker.register("/sw.js");
+        const base = process.env.NEXT_PUBLIC_BASE_PATH || "";
+        await navigator.serviceWorker.register(`${base}/sw.js`);
       } catch (error) {
         console.warn("Service worker registration failed", error);
       }

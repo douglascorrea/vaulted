@@ -1,6 +1,10 @@
 const CACHE_NAME = "vaulted-cache-v1";
 
-const APP_SHELL = ["/", "/manifest.webmanifest", "/icon.svg"];
+// Use the service worker's own URL to detect the base path
+const swUrl = new URL(self.registration.scope);
+const BASE = swUrl.pathname.replace(/\/$/, "");
+
+const APP_SHELL = [`${BASE}/`, `${BASE}/manifest.webmanifest`, `${BASE}/icon.svg`];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
@@ -50,7 +54,7 @@ self.addEventListener("fetch", (event) => {
         })
         .catch(() => {
           if (event.request.destination === "document") {
-            return caches.match("/");
+            return caches.match(`${BASE}/`);
           }
           return new Response(null, { status: 408, statusText: "Offline" });
         });
